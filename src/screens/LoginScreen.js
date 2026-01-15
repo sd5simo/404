@@ -2,8 +2,12 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Button from "../components/Button/Button";
 import InputBar from "../components/InputBar";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import app from "../../firebaseConfig";
+
+// FIX 1: Remove 'getAuth', import 'signInWithEmailAndPassword' only
+import { signInWithEmailAndPassword } from "firebase/auth";
+// FIX 2: Import the 'auth' object directly from your config
+import { auth } from "../../firebaseConfig"; 
+
 import { Formik } from "formik";
 import ErrorHandler, { showTopMessage } from "../utils/ErrorHandler";
 import { colors } from "../styles/Theme";
@@ -17,10 +21,12 @@ const LoginScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
 
     function handleFormSubmit(formValues) {
-        const auth = getAuth(app);
+        // FIX 3: DELETE THE LINE "const auth = getAuth(app);"
+        // It is removed in this version.
 
-        setLoading(true); // İşlem başladığında yüklemeyi etkinleştir
+        setLoading(true); 
 
+        // FIX 4: Use the imported 'auth' object here
         signInWithEmailAndPassword(
             auth,
             formValues.usermail,
@@ -28,7 +34,7 @@ const LoginScreen = ({ navigation }) => {
         )
             .then((res) => {
                 showTopMessage("Giriş Başarılı !", "success");
-                setLoading(false); // İşlem tamamlandığında yüklemeyi devre dışı bırak
+                setLoading(false); 
                 goToUserProfile();
             })
             .catch((err) => {
@@ -37,13 +43,9 @@ const LoginScreen = ({ navigation }) => {
             });
     }
 
-    // Navigation
-
     function goToMemberSignUp() {
         navigation.navigate("SignUpScreen");
     }
-
-    // Navigation
 
     function goToUserProfile() {
         navigation.navigate("UserProfileScreen");
@@ -53,7 +55,7 @@ const LoginScreen = ({ navigation }) => {
         <View style={styles.container}>
             <Text style={styles.text}> Giriş Yapın </Text>
             <Formik
-                initialValues={{ initialFormValues }}
+                initialValues={initialFormValues}
                 onSubmit={handleFormSubmit}
             >
                 {({ values, handleChange, handleSubmit }) => (

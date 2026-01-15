@@ -2,9 +2,6 @@
 
 The Online Appointment Application aims to address the inefficiencies in appointment processes by making scheduling and managing appointments with service providers easier. Designed to minimize the time waste and congested phone traffic caused by traditional phone-based communication, the project seeks to digitize modern appointment processes. Users can view service provider working hours, make appointments, track past appointments, and manage them, redefining productivity in appointment scheduling.
 
-![AppUI](/assets/appUI.jpg)
-
-![Gif](https://github.com/zhrgns/appointmentAppwithReactNative/blob/main/assets/appGif.gif)
 
 
 ## Technologies Used:

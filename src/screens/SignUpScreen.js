@@ -1,9 +1,13 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet ,ScrollView,KeyboardAvoidingView} from "react-native";
+import { View, Text, StyleSheet, ScrollView, KeyboardAvoidingView } from "react-native";
 import Button from "../components/Button/Button";
 import InputBar from "../components/InputBar";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import app from "../../firebaseConfig";
+
+// FIX 1: Remove 'getAuth'
+import { createUserWithEmailAndPassword } from "firebase/auth";
+// FIX 2: Import 'auth' directly
+import { auth } from "../../firebaseConfig";
+
 import { Formik } from "formik";
 import ErrorHandler, { showTopMessage } from "../utils/ErrorHandler";
 
@@ -17,7 +21,8 @@ export default function SignUpScreen() {
     const [loading, setLoading] = useState(false);
 
     function handleFormSubmit(formValues) {
-        const auth = getAuth(app);
+        // FIX 3: DELETE THE LINE "const auth = getAuth(app);"
+        // It is removed here.
 
         setLoading(true);
 
@@ -28,6 +33,7 @@ export default function SignUpScreen() {
             );
             setLoading(false);
         } else {
+            // FIX 4: Use 'auth' directly
             createUserWithEmailAndPassword(
                 auth,
                 formValues.usermail,
@@ -38,7 +44,6 @@ export default function SignUpScreen() {
                         showTopMessage(" Kayıt Başarılı !", "success");
                         setLoading(false);
                     }
-                    //buradan home screene gitmeli veya go back
                 )
                 .catch((err) =>
                     showTopMessage(ErrorHandler(err.code), "danger")
@@ -56,7 +61,7 @@ export default function SignUpScreen() {
             <ScrollView style={styles.container}>
                 <Text style={styles.text}> Kayıt Olun </Text>
                 <Formik
-                    initialValues={{ initialFormValues }}
+                    initialValues={initialFormValues}
                     onSubmit={handleFormSubmit}
                 >
                     {({ values, handleChange, handleSubmit }) => (
