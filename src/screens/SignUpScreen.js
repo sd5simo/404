@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, KeyboardAvoidingView } from "react-
 import Button from "../components/Button/Button";
 import InputBar from "../components/InputBar";
 
-// FIX 1: Remove 'getAuth'
+// FIX 1: Only import the create-user function. REMOVED 'getAuth'.
 import { createUserWithEmailAndPassword } from "firebase/auth";
 // FIX 2: Import 'auth' directly
 import { auth } from "../../firebaseConfig";
@@ -21,8 +21,7 @@ export default function SignUpScreen() {
     const [loading, setLoading] = useState(false);
 
     function handleFormSubmit(formValues) {
-        // FIX 3: DELETE THE LINE "const auth = getAuth(app);"
-        // It is removed here.
+        // FIX 3: LINE DELETED: const auth = getAuth(app);
 
         setLoading(true);
 
@@ -33,7 +32,6 @@ export default function SignUpScreen() {
             );
             setLoading(false);
         } else {
-            // FIX 4: Use 'auth' directly
             createUserWithEmailAndPassword(
                 auth,
                 formValues.usermail,

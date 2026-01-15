@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Button from "../components/Button/Button";
 import InputBar from "../components/InputBar";
 
-// FIX 1: Remove 'getAuth', import 'signInWithEmailAndPassword' only
+// FIX 1: Only import the sign-in function. REMOVED 'getAuth'.
 import { signInWithEmailAndPassword } from "firebase/auth";
-// FIX 2: Import the 'auth' object directly from your config
+// FIX 2: Import 'auth' directly from your config
 import { auth } from "../../firebaseConfig"; 
 
 import { Formik } from "formik";
@@ -21,12 +21,11 @@ const LoginScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
 
     function handleFormSubmit(formValues) {
-        // FIX 3: DELETE THE LINE "const auth = getAuth(app);"
-        // It is removed in this version.
+        // FIX 3: LINE DELETED: const auth = getAuth(app); 
+        // We use the imported 'auth' directly below.
 
-        setLoading(true); 
+        setLoading(true);
 
-        // FIX 4: Use the imported 'auth' object here
         signInWithEmailAndPassword(
             auth,
             formValues.usermail,
@@ -34,7 +33,7 @@ const LoginScreen = ({ navigation }) => {
         )
             .then((res) => {
                 showTopMessage("Giriş Başarılı !", "success");
-                setLoading(false); 
+                setLoading(false);
                 goToUserProfile();
             })
             .catch((err) => {
