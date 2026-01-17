@@ -3,10 +3,9 @@ import { View, Text, StyleSheet, ScrollView, KeyboardAvoidingView } from "react-
 import Button from "../components/Button/Button";
 import InputBar from "../components/InputBar";
 
-// FIX 1: Only import the create-user function. REMOVED 'getAuth'.
+// FIX: Import 'auth' directly. Do NOT import 'getAuth'
 import { createUserWithEmailAndPassword } from "firebase/auth";
-// FIX 2: Import 'auth' directly
-import { auth } from "../../firebaseConfig";
+import { auth } from "../../firebaseConfig"; // <--- IMPORT AUTH HERE
 
 import { Formik } from "formik";
 import ErrorHandler, { showTopMessage } from "../utils/ErrorHandler";
@@ -21,81 +20,42 @@ export default function SignUpScreen() {
     const [loading, setLoading] = useState(false);
 
     function handleFormSubmit(formValues) {
-        // FIX 3: LINE DELETED: const auth = getAuth(app);
-
+        // FIX: DELETE THE LINE 'const auth = getAuth(app);'
+        
         setLoading(true);
 
         if (formValues.password != formValues.passwordre) {
-            showTopMessage(
-                "Parola tekrarı uyuşmuyor, tekrar deneyin!",
-                "warning"
-            );
+            showTopMessage("Parola tekrarı uyuşmuyor!", "warning");
             setLoading(false);
         } else {
-            createUserWithEmailAndPassword(
-                auth,
-                formValues.usermail,
-                formValues.password
-            )
-                .then(
-                    (res) => {
-                        showTopMessage(" Kayıt Başarılı !", "success");
-                        setLoading(false);
-                    }
-                )
-                .catch((err) =>
-                    showTopMessage(ErrorHandler(err.code), "danger")
-                );
-
+            // FIX: Use 'auth' directly
+            createUserWithEmailAndPassword(auth, formValues.usermail, formValues.password)
+                .then((res) => {
+                    showTopMessage("Kayıt Başarılı!", "success");
+                    setLoading(false);
+                })
+                .catch((err) => showTopMessage(ErrorHandler(err.code), "danger"));
             setLoading(false);
         }
     }
-
+    // ... rest of the file (return statement) is the same ...
     return (
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior="padding"
-        >
+        <KeyboardAvoidingView style={styles.container} behavior="padding">
             <ScrollView style={styles.container}>
                 <Text style={styles.text}> Kayıt Olun </Text>
-                <Formik
-                    initialValues={initialFormValues}
-                    onSubmit={handleFormSubmit}
-                >
+                <Formik initialValues={initialFormValues} onSubmit={handleFormSubmit}>
                     {({ values, handleChange, handleSubmit }) => (
                         <>
                             <View style={styles.input_container}>
                                 <InputBar placeholder={"Ad"} />
                                 <InputBar placeholder={"Soyad"} />
-                                <InputBar
-                                    onType={handleChange("usermail")}
-                                    value={values.usermail}
-                                    placeholder={"E-posta adresi"}
-                                />
-                                <InputBar
-                                    onType={handleChange("phoneNumber")}
-                                    value={values.phoneNumber}
-                                    placeholder={"Telefon Numarası"}
-                                />
-                                <InputBar
-                                    onType={handleChange("password")}
-                                    value={values.password}
-                                    placeholder={"Parola"}
-                                    isSecure
-                                />
-                                <InputBar
-                                    onType={handleChange("passwordre")}
-                                    value={values.passwordre}
-                                    placeholder={"Parola Tekrar"}
-                                    isSecure
-                                />
+                                <InputBar onType={handleChange("usermail")} value={values.usermail} placeholder={"E-posta adresi"} />
+                                <InputBar onType={handleChange("phoneNumber")} value={values.phoneNumber} placeholder={"Telefon Numarası"} />
+                                <InputBar onType={handleChange("password")} value={values.password} placeholder={"Parola"} isSecure />
+                                <InputBar onType={handleChange("passwordre")} value={values.passwordre} placeholder={"Parola Tekrar"} isSecure />
                             </View>
                             <View style={styles.button_container}>
-                                <Button
-                                    text="Kaydı Tamamla"
-                                    onPress={handleSubmit}
-                                    loading={loading}
-                                />
+                                <Button text="Kaydı Tamamla" onPress={handleSubmit} loading={loading} />
                             </View>
                         </>
                     )}
@@ -104,23 +64,10 @@ export default function SignUpScreen() {
         </KeyboardAvoidingView>
     );
 }
-
+// ... styles ...
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        marginTop: 48,
-    },
-    text: {
-        marginHorizontal: 24,
-        marginVertical: 32,
-        fontSize: 30,
-        fontFamily: "Mulish-Medium",
-    },
-    input_container: {
-        marginHorizontal: 24,
-    },
-    button_container: {
-        flexDirection: "row",
-        margin: 16,
-    },
+    container: { flex: 1, marginTop: 48 },
+    text: { marginHorizontal: 24, marginVertical: 32, fontSize: 30, fontFamily: "Mulish-Medium" },
+    input_container: { marginHorizontal: 24 },
+    button_container: { flexDirection: "row", margin: 16 },
 });

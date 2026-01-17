@@ -1,127 +1,127 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ScrollView, KeyboardAvoidingView } from "react-native";
 import Button from "../components/Button/Button";
 import InputBar from "../components/InputBar";
 
-// FIX 1: Only import the sign-in function. REMOVED 'getAuth'.
-import { signInWithEmailAndPassword } from "firebase/auth";
-// FIX 2: Import 'auth' directly from your config
-import { auth } from "../../firebaseConfig"; 
+// FIX 1: Import only createUser function
+import { createUserWithEmailAndPassword } from "firebase/auth";
+// FIX 2: Import 'auth' directly
+import { auth } from "../../firebaseConfig";
 
 import { Formik } from "formik";
 import ErrorHandler, { showTopMessage } from "../utils/ErrorHandler";
-import { colors } from "../styles/Theme";
 
 const initialFormValues = {
     usermail: "",
     password: "",
+    passwordre: "",
 };
 
-const LoginScreen = ({ navigation }) => {
+export default function SignUpScreen() {
     const [loading, setLoading] = useState(false);
 
     function handleFormSubmit(formValues) {
-        // FIX 3: LINE DELETED: const auth = getAuth(app); 
-        // We use the imported 'auth' directly below.
+        // FIX 3: DELETE THIS LINE -> const auth = getAuth(app);
 
         setLoading(true);
 
-        signInWithEmailAndPassword(
-            auth,
-            formValues.usermail,
-            formValues.password
-        )
-            .then((res) => {
-                showTopMessage("Giriş Başarılı !", "success");
-                setLoading(false);
-                goToUserProfile();
-            })
-            .catch((err) => {
-                setLoading(false);
-                showTopMessage(ErrorHandler(err.code), "danger");
-            });
-    }
+        if (formValues.password != formValues.passwordre) {
+            showTopMessage(
+                "Parola tekrarı uyuşmuyor, tekrar deneyin!",
+                "warning"
+            );
+            setLoading(false);
+        } else {
+            // FIX 4: Use 'auth' directly here
+            createUserWithEmailAndPassword(
+                auth,
+                formValues.usermail,
+                formValues.password
+            )
+                .then(
+                    (res) => {
+                        showTopMessage(" Kayıt Başarılı !", "success");
+                        setLoading(false);
+                    }
+                )
+                .catch((err) =>
+                    showTopMessage(ErrorHandler(err.code), "danger")
+                );
 
-    function goToMemberSignUp() {
-        navigation.navigate("SignUpScreen");
-    }
-
-    function goToUserProfile() {
-        navigation.navigate("UserProfileScreen");
+            setLoading(false);
+        }
     }
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.text}> Giriş Yapın </Text>
-            <Formik
-                initialValues={initialFormValues}
-                onSubmit={handleFormSubmit}
-            >
-                {({ values, handleChange, handleSubmit }) => (
-                    <>
-                        <View style={styles.input_container}>
-                            <InputBar
-                                onType={handleChange("usermail")}
-                                value={values.usermail}
-                                placeholder={"E-posta adresi"}
-                            />
-                            <InputBar
-                                onType={handleChange("password")}
-                                value={values.password}
-                                placeholder={"Parola"}
-                                isSecure
-                            />
-                            <TouchableOpacity style={styles.button}>
-                                <Text style={styles.detail}>Parolamı Unuttum?</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.button_container}>
-                            <View style={styles.button}>
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior="padding"
+        >
+            <ScrollView style={styles.container}>
+                <Text style={styles.text}> Kayıt Olun </Text>
+                <Formik
+                    initialValues={initialFormValues}
+                    onSubmit={handleFormSubmit}
+                >
+                    {({ values, handleChange, handleSubmit }) => (
+                        <>
+                            <View style={styles.input_container}>
+                                <InputBar placeholder={"Ad"} />
+                                <InputBar placeholder={"Soyad"} />
+                                <InputBar
+                                    onType={handleChange("usermail")}
+                                    value={values.usermail}
+                                    placeholder={"E-posta adresi"}
+                                />
+                                <InputBar
+                                    onType={handleChange("phoneNumber")}
+                                    value={values.phoneNumber}
+                                    placeholder={"Telefon Numarası"}
+                                />
+                                <InputBar
+                                    onType={handleChange("password")}
+                                    value={values.password}
+                                    placeholder={"Parola"}
+                                    isSecure
+                                />
+                                <InputBar
+                                    onType={handleChange("passwordre")}
+                                    value={values.passwordre}
+                                    placeholder={"Parola Tekrar"}
+                                    isSecure
+                                />
+                            </View>
+                            <View style={styles.button_container}>
                                 <Button
-                                    text="Giriş Yap"
+                                    text="Kaydı Tamamla"
                                     onPress={handleSubmit}
                                     loading={loading}
                                 />
                             </View>
-                            <View style={styles.button}>
-                                <Button
-                                    text="Kaydol"
-                                    onPress={goToMemberSignUp}
-                                    theme="secondary"
-                                />
-                            </View>
-                        </View>
-                    </>
-                )}
-            </Formik>
-        </View>
+                        </>
+                    )}
+                </Formik>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
-};
+}
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "flex-start",
         marginTop: 48,
-        paddingHorizontal: 24,
     },
     text: {
+        marginHorizontal: 24,
         marginVertical: 32,
         fontSize: 30,
         fontFamily: "Mulish-Medium",
     },
-    detail: {
-        fontSize: 14,
-        fontFamily: "Mulish-Medium",
-        color:colors.color_gray
+    input_container: {
+        marginHorizontal: 24,
     },
     button_container: {
-        paddingVertical: 8,
-    },
-    button: {
-        paddingVertical: 8,
         flexDirection: "row",
+        margin: 16,
     },
 });
-
-export default LoginScreen;
