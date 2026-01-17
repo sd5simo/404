@@ -1,14 +1,15 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+// FIX 1: Import only signOut
 import { signOut } from "firebase/auth";
+// FIX 2: Import 'auth' directly
+import { auth } from "../../firebaseConfig"; 
+
 import { Feather } from "@expo/vector-icons";
 import { showTopMessage } from "../utils/ErrorHandler";
 import { colors } from "../styles/Theme";
 
-// --- CRITICAL FIX: Import 'auth' directly ---
-import { auth } from "../../firebaseConfig"; 
-
-// Import your custom components
+// Components
 import CardSmall from "../components/CardSmall";
 import UploadImage from "../components/UploadImage";
 
@@ -22,7 +23,7 @@ export default function UserProfileScreen({ navigation }) {
 
     // Sign out user
     function handleSignOut() {
-        // FIX: Use 'auth' directly here
+        // FIX 3: Use 'auth' directly here. NO getAuth(app).
         signOut(auth)
             .then((res) => {
                 showTopMessage("Oturum sonlandı", "success");
